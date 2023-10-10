@@ -23,7 +23,14 @@ export class UserController {
     await userRepository.save(newUser);
 
     const { password: _, ...user } = newUser;
-    
+
     return res.status(201).json(user);
+  }
+
+  async get(req: Request, res: Response) {
+    const ResponseUser = req.user;
+    const { password: _, transactions: __, ...user } = ResponseUser;
+
+    return res.json(user);
   }
 }
