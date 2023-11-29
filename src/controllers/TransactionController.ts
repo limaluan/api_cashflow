@@ -10,6 +10,22 @@ export class TransactionController {
 
     if (!user) throw new UnauthorizedError("Não autorizado");
 
+    if (description.length < 2) {
+      throw new BadRequestError(
+        "A descrição deve possuir mais de dois caracteres"
+      );
+    }
+
+    if (amount <= 0) {
+      throw new BadRequestError("Valor de transação deve ser maior que zero");
+    }
+
+    if (category.length < 2) {
+      throw new BadRequestError(
+        "A categoria deve possuir mais de dois caracteres"
+      );
+    }
+
     if (type !== "debit" && type !== "credit") {
       throw new BadRequestError("Tipo de transação Inválida");
     }
