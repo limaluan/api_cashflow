@@ -88,6 +88,46 @@ export class TransactionController {
     }
   }
 
+  async getLastsTransactions(req: Request, res: Response) {
+    const transactions: Transaction[] = await transactionRepository.find({
+      where: { user: req.user },
+    });
+
+    var lastDebitTransaction = {} as Transaction;
+    var lastCreditTransaction = {} as Transaction;
+
+    lastDebitTransaction = transactions.reduce(
+      (prevObj, currentObj) => {
+        if (currentObj.type === "debit") {
+          return currentObj.id > prevObj.id
+            ? {
+                ...currentObj,
+              }
+            : prevObj;
+        } else return prevObj;
+      },
+      { ...transactions[0], id: -1 }
+    );
+
+    lastCreditTransaction = transactions.reduce(
+      (prevObj, currentObj) => {
+        if (currentObj.type === "credit") {
+          return currentObj.id > prevObj.id
+            ? {
+                ...currentObj,
+              }
+            : prevObj;
+        } else return prevObj;
+      },
+      { ...transactions[0], id: -1 }
+    );
+
+    return res.json({
+      lastDebitTransaction,
+      lastCreditTransaction,
+    });
+  }
+
   async getByName(req: Request, res: Response) {
     const { search } = req.body;
 

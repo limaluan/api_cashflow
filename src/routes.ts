@@ -16,6 +16,9 @@ routes.use(authMiddleware);
 routes.get("/user", new UserController().get);
 routes.get("/user/transactions", new TransactionController().get);
 routes.post("/user/transactions", new TransactionController().create);
+
+routes.get("/user/transactions/lastTransactions", new TransactionController().getLastsTransactions);
+
 routes.get("/user/transactions/name", new TransactionController().getByName);
 routes.get("/user/transactions/balance", new TransactionController().getBalance);
 
