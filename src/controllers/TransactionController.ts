@@ -61,13 +61,31 @@ export class TransactionController {
   }
 
   async get(req: Request, res: Response) {
-    const transactions: Transaction[] = await transactionRepository.find({
-      where: { user: req.user },
-    });
+    try {
+      const { page = 1, limit = 10 } = req.query;
 
-    console.log(transactions);
+      // Retorna todos os itens antes da página atual
+      const skip = (Number(page) - 1) * Number(limit);
 
-    return res.json(transactions);
+      const [transactions, totalTransactions] =
+        await transactionRepository.findAndCount({
+          where: { user: req.user },
+          skip: skip, // Pula todos os itens antes da página atual
+          take: Number(limit), // Define o máximo de itens a serem pegos
+        });
+
+      const totalPages = Math.ceil(totalTransactions / Number(limit));
+
+      return res.json({
+        transactions,
+        totalPages,
+        currentPage: Number(page),
+        totalTransactions,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Erro ao buscar transações." });
+    }
   }
 
   async getByName(req: Request, res: Response) {
